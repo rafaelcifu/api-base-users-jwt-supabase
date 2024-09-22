@@ -1,0 +1,31 @@
+{
+  "name": "cx-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "build": "nest build",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^10.4.3",
+    "@nestjs/core": "^10.4.3",
+    "@nestjs/platform-express": "^10.4.3",
+    "@prisma/client": "^5.19.1",
+    "class-validator": "^0.14.1",
+    "prisma": "^5.19.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@nestjs/config": "^3.2.3",
+    "@types/node": "^22.5.5",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
