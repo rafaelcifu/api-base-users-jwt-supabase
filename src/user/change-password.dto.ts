@@ -3,15 +3,14 @@ import { IsString, MinLength } from "class-validator";
 
 export class ChangePasswordDto {
   @ApiProperty({
-    description: "Current password of the user",
+    description: "Current password",
     example: "currentPassword123",
   })
   @IsString()
   currentPassword: string;
 
   @ApiProperty({
-    description:
-      "New password for the user, must be at least 6 characters long",
+    description: "New password, must be at least 6 characters",
     example: "newPassword456",
   })
   @IsString()

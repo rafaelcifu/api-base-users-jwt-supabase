@@ -2,14 +2,13 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { ChangePasswordDto } from "./change-password.dto";
+import { UpdateUserProfileDto } from "./update-user-profile.dto";
 export declare class UserController {
     private userService;
     constructor(userService: UserService);
     createUser(createUserDto: CreateUserDto): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -18,8 +17,6 @@ export declare class UserController {
     getAllUsers(): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -28,8 +25,6 @@ export declare class UserController {
     getUserById(id: string): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -46,8 +41,6 @@ export declare class UserController {
     } & {
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -56,8 +49,6 @@ export declare class UserController {
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -66,8 +57,6 @@ export declare class UserController {
     deleteUser(id: string): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -76,10 +65,18 @@ export declare class UserController {
     changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateUserProfile(id: string, updateUserProfileDto: UpdateUserProfileDto): Promise<{
+        id: string;
+        userId: string;
+        name: string | null;
+        phone: string | null;
+        bio: string | null;
+        avatarUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

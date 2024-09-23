@@ -1,14 +1,13 @@
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateUserDto } from "./update-user.dto";
 import { ChangePasswordDto } from "./change-password.dto";
+import { UpdateUserProfileDto } from "./update-user-profile.dto";
 export declare class UserService {
     private prisma;
     constructor(prisma: PrismaService);
-    createUser(email: string, password: string | null, providerId: string): Promise<{
+    createUser(email: string, password: string | null, providerId: string, name?: string, phone?: string): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -17,8 +16,6 @@ export declare class UserService {
     getAllUsers(): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -27,8 +24,6 @@ export declare class UserService {
     getUserById(id: string): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -45,8 +40,6 @@ export declare class UserService {
     } & {
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -55,8 +48,6 @@ export declare class UserService {
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -65,8 +56,6 @@ export declare class UserService {
     deleteUser(id: string): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
@@ -75,20 +64,18 @@ export declare class UserService {
     changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<{
         id: string;
         email: string;
-        name: string | null;
-        phone: string | null;
         passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    updateUserPassword(userId: string, newHashedPassword: string): Promise<{
+    updateUserProfile(userId: string, profileData: UpdateUserProfileDto): Promise<{
         id: string;
-        email: string;
+        userId: string;
         name: string | null;
         phone: string | null;
-        passwordHash: string | null;
-        emailVerified: boolean;
+        bio: string | null;
+        avatarUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

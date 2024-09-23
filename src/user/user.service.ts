@@ -2,20 +2,26 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { ChangePasswordDto } from "./change-password.dto";
+import { UpdateUserProfileDto } from "./update-user-profile.dto";
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   // Create a new user
-  async createUser(email: string, password: string | null, providerId: string) {
+  async createUser(
+    email: string,
+    password: string | null,
+    providerId: string,
+    name?: string,
+    phone?: string
+  ) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -37,7 +43,8 @@ export class UserService {
       data: {
         email,
         passwordHash,
-        emailVerified: false, // Always false for email provider
+        emailVerified: false,
+        profile: name || phone ? { create: { name, phone } } : undefined,
       },
     });
 
@@ -101,45 +108,66 @@ export class UserService {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  // change password
   async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const { currentPassword, newPassword } = changePasswordDto;
+
+    // Find user by ID and include providers
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { providers: true }, // Include providers to validate
+    });
     if (!user) {
-      throw new NotFoundException("Usuário não encontrado");
+      throw new NotFoundException("User not found");
     }
 
-    // Verificar a senha atual
-    if (!user.passwordHash) {
-      throw new UnauthorizedException("Senha não definida para este usuário");
+    // Check if user has email provider
+    const hasEmailProvider = user.providers.some(
+      (provider) =>
+        provider.providerId === "2d0ceebb-955c-4f40-a960-d18f7889f934"
+    );
+    if (!hasEmailProvider) {
+      throw new BadRequestException(
+        "Password change is only applicable for email users"
+      );
     }
+
+    // Check if passwordHash is not null
+    if (!user.passwordHash) {
+      throw new BadRequestException("User has no password set");
+    }
+
+    // Verify current password
     const isPasswordValid = await bcrypt.compare(
-      changePasswordDto.currentPassword,
+      currentPassword,
       user.passwordHash
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException("Senha atual incorreta");
+      throw new BadRequestException("Current password is incorrect");
     }
 
-    // Hash da nova senha
-    const newHashedPassword = await bcrypt.hash(
-      changePasswordDto.newPassword,
-      10
-    );
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Atualizar a senha
+    // Update user with new password
     return this.prisma.user.update({
       where: { id },
-      data: {
-        passwordHash: newHashedPassword, // Correctly update only the passwordHash
-      },
+      data: { passwordHash: hashedPassword },
     });
   }
+  // Update user profile
+  async updateUserProfile(userId: string, profileData: UpdateUserProfileDto) {
+    // Check if user exists
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
 
-  // ... existing code ...
-
-  async updateUserPassword(userId: string, newHashedPassword: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: newHashedPassword },
+    // Update or create the profile
+    return this.prisma.userProfile.upsert({
+      where: { userId: userId },
+      update: { ...profileData },
+      create: { userId: userId, ...profileData },
     });
   }
 }

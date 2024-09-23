@@ -12,6 +12,7 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { ChangePasswordDto } from "./change-password.dto";
+import { UpdateUserProfileDto } from "./update-user-profile.dto";
 
 @Controller("users")
 export class UserController {
@@ -20,13 +21,19 @@ export class UserController {
   // Create a new user
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    const { email, password, providerId } = createUserDto;
+    const { email, password, providerId, name, phone } = createUserDto;
 
     if (!providerId) {
       throw new BadRequestException("Provider ID is required");
     }
 
-    return this.userService.createUser(email, password, providerId);
+    return this.userService.createUser(
+      email,
+      password,
+      providerId,
+      name,
+      phone
+    );
   }
 
   // Get all users
@@ -70,5 +77,14 @@ export class UserController {
   ) {
     console.log("Received ID:", id);
     return this.userService.changePassword(id, changePasswordDto);
+  }
+
+  // Update user profile
+  @Patch(":id/profile")
+  async updateUserProfile(
+    @Param("id") id: string,
+    @Body() updateUserProfileDto: UpdateUserProfileDto
+  ) {
+    return this.userService.updateUserProfile(id, updateUserProfileDto);
   }
 }

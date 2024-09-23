@@ -50,7 +50,7 @@ let UserService = class UserService {
         this.prisma = prisma;
     }
     // Create a new user
-    createUser(email, password, providerId) {
+    createUser(email, password, providerId, name, phone) {
         return __awaiter(this, void 0, void 0, function* () {
             const existingUser = yield this.prisma.user.findUnique({
                 where: { email },
@@ -69,7 +69,8 @@ let UserService = class UserService {
                 data: {
                     email,
                     passwordHash,
-                    emailVerified: false, // Always false for email provider
+                    emailVerified: false,
+                    profile: name || phone ? { create: { name, phone } } : undefined,
                 },
             });
             yield this.prisma.userProvider.create({
@@ -134,37 +135,54 @@ let UserService = class UserService {
             return this.prisma.user.delete({ where: { id } });
         });
     }
+    // change password
     changePassword(id, changePasswordDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findUnique({ where: { id } });
+            const { currentPassword, newPassword } = changePasswordDto;
+            // Find user by ID and include providers
+            const user = yield this.prisma.user.findUnique({
+                where: { id },
+                include: { providers: true }, // Include providers to validate
+            });
             if (!user) {
-                throw new common_1.NotFoundException("Usuário não encontrado");
+                throw new common_1.NotFoundException("User not found");
             }
-            // Verificar a senha atual
+            // Check if user has email provider
+            const hasEmailProvider = user.providers.some((provider) => provider.providerId === "2d0ceebb-955c-4f40-a960-d18f7889f934");
+            if (!hasEmailProvider) {
+                throw new common_1.BadRequestException("Password change is only applicable for email users");
+            }
+            // Check if passwordHash is not null
             if (!user.passwordHash) {
-                throw new common_1.UnauthorizedException("Senha não definida para este usuário");
+                throw new common_1.BadRequestException("User has no password set");
             }
-            const isPasswordValid = yield bcrypt.compare(changePasswordDto.currentPassword, user.passwordHash);
+            // Verify current password
+            const isPasswordValid = yield bcrypt.compare(currentPassword, user.passwordHash);
             if (!isPasswordValid) {
-                throw new common_1.UnauthorizedException("Senha atual incorreta");
+                throw new common_1.BadRequestException("Current password is incorrect");
             }
-            // Hash da nova senha
-            const newHashedPassword = yield bcrypt.hash(changePasswordDto.newPassword, 10);
-            // Atualizar a senha
+            // Hash new password
+            const hashedPassword = yield bcrypt.hash(newPassword, 10);
+            // Update user with new password
             return this.prisma.user.update({
                 where: { id },
-                data: {
-                    passwordHash: newHashedPassword, // Correctly update only the passwordHash
-                },
+                data: { passwordHash: hashedPassword },
             });
         });
     }
-    // ... existing code ...
-    updateUserPassword(userId, newHashedPassword) {
+    // Update user profile
+    updateUserProfile(userId, profileData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.user.update({
-                where: { id: userId },
-                data: { passwordHash: newHashedPassword },
+            // Check if user exists
+            const user = yield this.prisma.user.findUnique({ where: { id: userId } });
+            if (!user) {
+                throw new common_1.NotFoundException("User not found");
+            }
+            // Update or create the profile
+            return this.prisma.userProfile.upsert({
+                where: { userId: userId },
+                update: Object.assign({}, profileData),
+                create: Object.assign({ userId: userId }, profileData),
             });
         });
     }

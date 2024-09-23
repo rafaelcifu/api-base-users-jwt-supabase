@@ -12,9 +12,9 @@ import { UserModule } from "./user/user.module";
     PrismaModule,
     RoleModule,
     AuthProviderModule,
-    UserModule, // Import the Prisma module here
+    UserModule,
   ],
-  controllers: [AppController], // Register the AppController here
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

@@ -21,7 +21,7 @@ class ChangePasswordDto {
 exports.ChangePasswordDto = ChangePasswordDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: "Current password of the user",
+        description: "Current password",
         example: "currentPassword123",
     }),
     (0, class_validator_1.IsString)(),
@@ -29,7 +29,7 @@ __decorate([
 ], ChangePasswordDto.prototype, "currentPassword", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: "New password for the user, must be at least 6 characters long",
+        description: "New password, must be at least 6 characters",
         example: "newPassword456",
     }),
     (0, class_validator_1.IsString)(),

@@ -27,6 +27,7 @@ const user_service_1 = require("./user.service");
 const create_user_dto_1 = require("./create-user.dto");
 const update_user_dto_1 = require("./update-user.dto");
 const change_password_dto_1 = require("./change-password.dto");
+const update_user_profile_dto_1 = require("./update-user-profile.dto");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -34,11 +35,11 @@ let UserController = class UserController {
     // Create a new user
     createUser(createUserDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { email, password, providerId } = createUserDto;
+            const { email, password, providerId, name, phone } = createUserDto;
             if (!providerId) {
                 throw new common_1.BadRequestException("Provider ID is required");
             }
-            return this.userService.createUser(email, password, providerId);
+            return this.userService.createUser(email, password, providerId, name, phone);
         });
     }
     // Get all users
@@ -76,6 +77,12 @@ let UserController = class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Received ID:", id);
             return this.userService.changePassword(id, changePasswordDto);
+        });
+    }
+    // Update user profile
+    updateUserProfile(id, updateUserProfileDto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.userService.updateUserProfile(id, updateUserProfileDto);
         });
     }
 };
@@ -130,6 +137,14 @@ __decorate([
     __metadata("design:paramtypes", [String, change_password_dto_1.ChangePasswordDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Patch)(":id/profile"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_user_profile_dto_1.UpdateUserProfileDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUserProfile", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)("users"),
     __metadata("design:paramtypes", [user_service_1.UserService])

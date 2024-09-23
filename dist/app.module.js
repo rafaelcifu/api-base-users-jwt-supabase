@@ -24,9 +24,9 @@ exports.AppModule = AppModule = __decorate([
             prisma_module_1.PrismaModule,
             role_module_1.RoleModule,
             auth_provider_module_1.AuthProviderModule,
-            user_module_1.UserModule, // Import the Prisma module here
+            user_module_1.UserModule,
         ],
-        controllers: [app_controller_1.AppController], // Register the AppController here
+        controllers: [app_controller_1.AppController],
         providers: [],
     })
 ], AppModule);

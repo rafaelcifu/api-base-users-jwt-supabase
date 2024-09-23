@@ -9,47 +9,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUserDto = void 0;
+exports.UpdateUserProfileDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-class CreateUserDto {
-    constructor(email, password, providerId) {
-        this.email = email;
-        this.password = password;
-        this.providerId = providerId;
-    }
+class UpdateUserProfileDto {
 }
-exports.CreateUserDto = CreateUserDto;
+exports.UpdateUserProfileDto = UpdateUserProfileDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        example: "user@example.com",
-        description: "The email of the user",
-    }),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ minLength: 6, description: "The password of the user" }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(6),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "password", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: "google",
-        description: "The provider ID of the user",
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "providerId", void 0);
-__decorate([
+    (0, swagger_1.ApiProperty)({ description: "User name", example: "John Doe" }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "name", void 0);
+], UpdateUserProfileDto.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: "User phone number", example: "+123456789" }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "phone", void 0);
-//# sourceMappingURL=create-user.dto.js.map
+], UpdateUserProfileDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: "User bio",
+        example: "Software Developer at Company X",
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateUserProfileDto.prototype, "bio", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: "URL to user avatar",
+        example: "https://example.com/avatar.jpg",
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateUserProfileDto.prototype, "avatarUrl", void 0);
+//# sourceMappingURL=update-user-profile.dto.js.map
