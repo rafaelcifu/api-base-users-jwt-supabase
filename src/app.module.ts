@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { RoleModule } from "./role/role.module";
 import { AuthProviderModule } from "./auth-provider/auth-provider.module";
 import { UserModule } from "./user/user.module";
+import { CompanyModule } from "./company/company.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from "./user/user.module";
     RoleModule,
     AuthProviderModule,
     UserModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -82,18 +83,18 @@ model CompanyProfile {
 }
 
 model CompanyUser {
-  id        String @id @default(uuid())
-  userId    String
+  id        String   @id @default(uuid())
+  userId    String?
+  email     String? // Email for invitation
   companyId String
-  roleId    String // Foreign key for Role
-
-  user    User    @relation(fields: [userId], references: [id])
-  company Company @relation(fields: [companyId], references: [id])
-  role    Role    @relation(fields: [roleId], references: [id]) // Relationship with Role
-
+  roleId    String
+  status    String   @default("invited") // "invited" or "active"
+  user      User?    @relation(fields: [userId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
   createdAt DateTime @default(now())
 
-  @@unique([userId, companyId]) // Ensure a user can belong to a company only once
+  @@unique([userId, companyId])
 }
 
 model Project {

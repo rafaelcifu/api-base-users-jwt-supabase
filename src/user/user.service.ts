@@ -48,6 +48,12 @@ export class UserService {
       },
     });
 
+    // Update CompanyUser entries for the user's email
+    await this.prisma.companyUser.updateMany({
+      where: { email: newUser.email, userId: null }, // Check for email with null userId
+      data: { userId: newUser.id, status: "active" }, // Link to new userId and set status to active
+    });
+
     await this.prisma.userProvider.create({
       data: {
         userId: newUser.id,
@@ -121,10 +127,28 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
 
+    let cachedEmailProviderId: string | null = null;
+
     // Check if user has email provider
+    if (!cachedEmailProviderId) {
+      const provider = await this.prisma.authProvider.findFirst({
+        where: {
+          name: {
+            in: ["email", "e-mail", "default", "mail", "email provider"],
+            mode: "insensitive",
+          },
+        },
+      });
+
+      if (!provider) {
+        throw new BadRequestException("Email provider not found");
+      }
+
+      cachedEmailProviderId = provider.id; // Cache the provider ID
+    }
+
     const hasEmailProvider = user.providers.some(
-      (provider) =>
-        provider.providerId === "2d0ceebb-955c-4f40-a960-d18f7889f934"
+      (provider) => provider.providerId === cachedEmailProviderId // Use the cached providerId
     );
     if (!hasEmailProvider) {
       throw new BadRequestException(

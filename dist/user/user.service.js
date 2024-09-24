@@ -73,6 +73,11 @@ let UserService = class UserService {
                     profile: name || phone ? { create: { name, phone } } : undefined,
                 },
             });
+            // Update CompanyUser entries for the user's email
+            yield this.prisma.companyUser.updateMany({
+                where: { email: newUser.email, userId: null }, // Check for email with null userId
+                data: { userId: newUser.id, status: "active" }, // Link to new userId and set status to active
+            });
             yield this.prisma.userProvider.create({
                 data: {
                     userId: newUser.id,
@@ -147,8 +152,24 @@ let UserService = class UserService {
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
+            let cachedEmailProviderId = null;
             // Check if user has email provider
-            const hasEmailProvider = user.providers.some((provider) => provider.providerId === "2d0ceebb-955c-4f40-a960-d18f7889f934");
+            if (!cachedEmailProviderId) {
+                const provider = yield this.prisma.authProvider.findFirst({
+                    where: {
+                        name: {
+                            in: ["email", "e-mail", "default", "mail", "email provider"],
+                            mode: "insensitive",
+                        },
+                    },
+                });
+                if (!provider) {
+                    throw new common_1.BadRequestException("Email provider not found");
+                }
+                cachedEmailProviderId = provider.id; // Cache the provider ID
+            }
+            const hasEmailProvider = user.providers.some((provider) => provider.providerId === cachedEmailProviderId // Use the cached providerId
+            );
             if (!hasEmailProvider) {
                 throw new common_1.BadRequestException("Password change is only applicable for email users");
             }

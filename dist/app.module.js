@@ -14,6 +14,7 @@ const app_controller_1 = require("./app.controller");
 const role_module_1 = require("./role/role.module");
 const auth_provider_module_1 = require("./auth-provider/auth-provider.module");
 const user_module_1 = require("./user/user.module");
+const company_module_1 = require("./company/company.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,6 +26,7 @@ exports.AppModule = AppModule = __decorate([
             role_module_1.RoleModule,
             auth_provider_module_1.AuthProviderModule,
             user_module_1.UserModule,
+            company_module_1.CompanyModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [],
