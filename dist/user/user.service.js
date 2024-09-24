@@ -1,35 +1,15 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -44,60 +24,79 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-const bcrypt = __importStar(require("bcrypt"));
+const supabase_js_1 = require("@supabase/supabase-js"); // Ensure SupabaseClient is imported
+const supabase_service_1 = require("../supabase/supabase.service");
 let UserService = class UserService {
-    constructor(prisma) {
-        this.prisma = prisma;
+    constructor(prismaService, supabaseService, supabaseClient // Inject SUPABASE_CLIENT
+    ) {
+        this.prismaService = prismaService;
+        this.supabaseService = supabaseService;
+        this.supabaseClient = supabaseClient;
+        this.supabase = supabaseClient; // Initialize Supabase
     }
     // Create a new user
-    createUser(email, password, providerId, name, phone) {
+    createUser(email, password, providerId, name, phone, supabaseId // Pass supabaseId here
+    ) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingUser = yield this.prisma.user.findUnique({
+            const supabase = this.supabaseService.getClient();
+            // Check if the user already exists in your own database
+            const existingUser = yield this.prismaService.user.findUnique({
                 where: { email },
             });
             if (existingUser) {
                 throw new common_1.BadRequestException("User already exists with this email");
             }
-            const passwordHash = password ? yield bcrypt.hash(password, 10) : null;
-            const emailProvider = yield this.prisma.authProvider.findUnique({
-                where: { name: "email" },
-            });
-            if (!emailProvider) {
-                throw new Error("Email provider not found");
-            }
-            const newUser = yield this.prisma.user.create({
+            // Create the user in your own database
+            const newUser = yield this.prismaService.user.create({
                 data: {
                     email,
-                    passwordHash,
-                    emailVerified: false,
+                    supabaseId: supabaseId, // Use the passed supabaseId
                     profile: name || phone ? { create: { name, phone } } : undefined,
                 },
             });
-            // Update CompanyUser entries for the user's email
-            yield this.prisma.companyUser.updateMany({
-                where: { email: newUser.email, userId: null }, // Check for email with null userId
-                data: { userId: newUser.id, status: "active" }, // Link to new userId and set status to active
-            });
-            yield this.prisma.userProvider.create({
+            // Link the user to the provider in your own database
+            yield this.prismaService.userProvider.create({
                 data: {
                     userId: newUser.id,
-                    providerId: emailProvider.id, // Use fetched provider ID
-                    providerUserId: newUser.email,
+                    providerId,
+                    providerUserId: supabaseId !== null && supabaseId !== void 0 ? supabaseId : email, // Use the supabaseId if available, else use email
                 },
             });
             return newUser;
         });
     }
+    findOrCreateOAuthUser(email, providerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Check if user already exists in your database
+            let user = yield this.prismaService.user.findUnique({ where: { email } });
+            if (!user) {
+                // If not, create a new user with just the email and providerId
+                user = yield this.prismaService.user.create({
+                    data: {
+                        email,
+                        supabaseId: email,
+                        providers: {
+                            create: {
+                                providerId,
+                                providerUserId: email, // Store the email as providerUserId
+                            },
+                        },
+                    },
+                });
+            }
+            return user;
+        });
+    }
     // Get all users
     getAllUsers() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.user.findMany();
+            return this.prismaService.user.findMany();
         });
     }
     // Get user by ID
     getUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findUnique({ where: { id } });
+            const user = yield this.prismaService.user.findUnique({ where: { id } });
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
@@ -107,24 +106,20 @@ let UserService = class UserService {
     // Get user by email
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findUnique({
+            const user = yield this.prismaService.user.findUnique({
                 where: { email },
-                include: { providers: true },
             });
-            if (!user) {
-                throw new common_1.NotFoundException("User not found");
-            }
-            return user;
+            return user; // Returns null if no user is found
         });
     }
     // Update user
     updateUser(id, updateUserDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findUnique({ where: { id } });
+            const user = yield this.prismaService.user.findUnique({ where: { id } });
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
-            return this.prisma.user.update({
+            return this.prismaService.user.update({
                 where: { id },
                 data: updateUserDto,
             });
@@ -133,74 +128,63 @@ let UserService = class UserService {
     // Delete user
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findUnique({ where: { id } });
+            // Find the user in your local database
+            const user = yield this.prismaService.user.findUnique({ where: { id } });
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
-            return this.prisma.user.delete({ where: { id } });
+            // Ensure user.supabaseId is not null before passing it
+            if (user.supabaseId) {
+                const { error } = yield this.supabase.auth.admin.deleteUser(user.supabaseId);
+                if (error) {
+                    throw new common_1.BadRequestException(`Supabase error: ${error.message}`);
+                }
+            }
+            // Delete the user in your local database
+            yield this.prismaService.user.delete({ where: { id } });
+            return { message: "User deleted successfully" };
         });
     }
-    // change password
+    // Change password using Supabase
     changePassword(id, changePasswordDto) {
         return __awaiter(this, void 0, void 0, function* () {
+            const supabase = this.supabaseService.getClient();
             const { currentPassword, newPassword } = changePasswordDto;
-            // Find user by ID and include providers
-            const user = yield this.prisma.user.findUnique({
-                where: { id },
-                include: { providers: true }, // Include providers to validate
-            });
+            // Check if the user exists in your own database
+            const user = yield this.prismaService.user.findUnique({ where: { id } });
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
-            let cachedEmailProviderId = null;
-            // Check if user has email provider
-            if (!cachedEmailProviderId) {
-                const provider = yield this.prisma.authProvider.findFirst({
-                    where: {
-                        name: {
-                            in: ["email", "e-mail", "default", "mail", "email provider"],
-                            mode: "insensitive",
-                        },
-                    },
-                });
-                if (!provider) {
-                    throw new common_1.BadRequestException("Email provider not found");
-                }
-                cachedEmailProviderId = provider.id; // Cache the provider ID
-            }
-            const hasEmailProvider = user.providers.some((provider) => provider.providerId === cachedEmailProviderId // Use the cached providerId
-            );
-            if (!hasEmailProvider) {
-                throw new common_1.BadRequestException("Password change is only applicable for email users");
-            }
-            // Check if passwordHash is not null
-            if (!user.passwordHash) {
-                throw new common_1.BadRequestException("User has no password set");
-            }
-            // Verify current password
-            const isPasswordValid = yield bcrypt.compare(currentPassword, user.passwordHash);
-            if (!isPasswordValid) {
+            // Check if the user exists in Supabase and validate the current password
+            const { data: loginData, error: loginError } = yield supabase.auth.signInWithPassword({
+                email: user.email,
+                password: currentPassword,
+            });
+            if (loginError) {
                 throw new common_1.BadRequestException("Current password is incorrect");
             }
-            // Hash new password
-            const hashedPassword = yield bcrypt.hash(newPassword, 10);
-            // Update user with new password
-            return this.prisma.user.update({
-                where: { id },
-                data: { passwordHash: hashedPassword },
+            // Update password in Supabase
+            const { error: updateError } = yield supabase.auth.updateUser({
+                password: newPassword,
             });
+            if (updateError) {
+                throw new common_1.BadRequestException("Error changing password: " + updateError.message);
+            }
+            return { message: "Password updated successfully" };
         });
     }
     // Update user profile
     updateUserProfile(userId, profileData) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if user exists
-            const user = yield this.prisma.user.findUnique({ where: { id: userId } });
+            const user = yield this.prismaService.user.findUnique({
+                where: { id: userId },
+            });
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
             // Update or create the profile
-            return this.prisma.userProfile.upsert({
+            return this.prismaService.userProfile.upsert({
                 where: { userId: userId },
                 update: Object.assign({}, profileData),
                 create: Object.assign({ userId: userId }, profileData),
@@ -211,6 +195,10 @@ let UserService = class UserService {
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __param(2, (0, common_1.Inject)("SUPABASE_CLIENT")),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        supabase_service_1.SupabaseService,
+        supabase_js_1.SupabaseClient // Inject SUPABASE_CLIENT
+    ])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

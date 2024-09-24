@@ -10,8 +10,11 @@ import {
 import { AuthProviderService } from "./auth-provider.service";
 import { CreateAuthProviderDto } from "./create-auth-provider.dto";
 import { UpdateAuthProviderDto } from "./update-auth-provider.dto";
+import { UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller("auth-providers")
+@UseGuards(JwtAuthGuard)
 export class AuthProviderController {
   constructor(private authProviderService: AuthProviderService) {}
 

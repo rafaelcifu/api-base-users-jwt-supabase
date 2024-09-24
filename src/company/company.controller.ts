@@ -11,7 +11,11 @@ import { CompanyService } from "./company.service";
 import { CreateCompanyDto } from "./create-company.dto";
 import { UpdateCompanyDto } from "./update-company.dto";
 import { InviteUserDto } from "./invite-user.dto";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UseGuards } from "@nestjs/common";
+
 @Controller("companies")
+@UseGuards(JwtAuthGuard)
 export class CompanyController {
   constructor(private companyService: CompanyService) {}
 

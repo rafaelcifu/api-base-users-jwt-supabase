@@ -15,21 +15,24 @@ const role_module_1 = require("./role/role.module");
 const auth_provider_module_1 = require("./auth-provider/auth-provider.module");
 const user_module_1 = require("./user/user.module");
 const company_module_1 = require("./company/company.module");
+const supabase_module_1 = require("./supabase/supabase.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true }), // Make .env variables globally available
-            prisma_module_1.PrismaModule,
-            role_module_1.RoleModule,
-            auth_provider_module_1.AuthProviderModule,
-            user_module_1.UserModule,
-            company_module_1.CompanyModule,
+            config_1.ConfigModule.forRoot({ isGlobal: true }), // Load .env variables globally
+            prisma_module_1.PrismaModule, // Database ORM
+            role_module_1.RoleModule, // Role management
+            auth_provider_module_1.AuthProviderModule, // Manage auth providers
+            user_module_1.UserModule, // User management
+            company_module_1.CompanyModule, // Company related logic
+            supabase_module_1.SupabaseModule, // Supabase integration
+            auth_module_1.AuthModule, // Authentication logic
         ],
-        controllers: [app_controller_1.AppController],
-        providers: [],
+        controllers: [app_controller_1.AppController], // Application controllers
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

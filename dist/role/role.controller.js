@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const role_service_1 = require("./role.service");
 const create_role_dto_1 = require("./create-role.dto");
 const update_role_dto_1 = require("./update-role.dto");
+const common_2 = require("@nestjs/common");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let RoleController = class RoleController {
     constructor(roleService) {
         this.roleService = roleService;
@@ -75,6 +77,7 @@ __decorate([
 ], RoleController.prototype, "deleteRole", null);
 exports.RoleController = RoleController = __decorate([
     (0, common_1.Controller)("roles"),
+    (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [role_service_1.RoleService])
 ], RoleController);
 //# sourceMappingURL=role.controller.js.map

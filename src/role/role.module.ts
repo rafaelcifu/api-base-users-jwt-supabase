@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { RoleService } from "./role.service";
 import { RoleController } from "./role.controller";
 import { PrismaModule } from "../prisma/prisma.module";
+import { AuthModule } from "../auth/auth.module"; // Correct import for AuthModule
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [RoleController],
   providers: [RoleService],
   exports: [RoleService],

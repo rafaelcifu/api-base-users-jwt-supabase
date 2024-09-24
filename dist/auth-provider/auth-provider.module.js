@@ -11,14 +11,16 @@ const common_1 = require("@nestjs/common");
 const auth_provider_service_1 = require("./auth-provider.service");
 const auth_provider_controller_1 = require("./auth-provider.controller");
 const prisma_module_1 = require("../prisma/prisma.module"); // Ensure PrismaModule is imported
+const auth_module_1 = require("../auth/auth.module");
 let AuthProviderModule = class AuthProviderModule {
 };
 exports.AuthProviderModule = AuthProviderModule;
 exports.AuthProviderModule = AuthProviderModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule], // PrismaModule must be imported here
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule], // PrismaModule must be imported here
         providers: [auth_provider_service_1.AuthProviderService],
         controllers: [auth_provider_controller_1.AuthProviderController],
+        exports: [auth_provider_service_1.AuthProviderService],
     })
 ], AuthProviderModule);
 //# sourceMappingURL=auth-provider.module.js.map

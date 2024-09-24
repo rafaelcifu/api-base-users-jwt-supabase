@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const auth_provider_service_1 = require("./auth-provider.service");
 const create_auth_provider_dto_1 = require("./create-auth-provider.dto");
 const update_auth_provider_dto_1 = require("./update-auth-provider.dto");
+const common_2 = require("@nestjs/common");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let AuthProviderController = class AuthProviderController {
     constructor(authProviderService) {
         this.authProviderService = authProviderService;
@@ -75,6 +77,7 @@ __decorate([
 ], AuthProviderController.prototype, "deleteAuthProvider", null);
 exports.AuthProviderController = AuthProviderController = __decorate([
     (0, common_1.Controller)("auth-providers"),
+    (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [auth_provider_service_1.AuthProviderService])
 ], AuthProviderController);
 //# sourceMappingURL=auth-provider.controller.js.map

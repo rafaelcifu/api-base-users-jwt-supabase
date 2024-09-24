@@ -28,6 +28,7 @@ const create_user_dto_1 = require("./create-user.dto");
 const update_user_dto_1 = require("./update-user.dto");
 const change_password_dto_1 = require("./change-password.dto");
 const update_user_profile_dto_1 = require("./update-user-profile.dto");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -96,12 +97,14 @@ __decorate([
 ], UserController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getAllUsers", null);
 __decorate([
     (0, common_1.Get)(":id"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -109,6 +112,7 @@ __decorate([
 ], UserController.prototype, "getUserById", null);
 __decorate([
     (0, common_1.Get)("email/:email"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("email")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -116,6 +120,7 @@ __decorate([
 ], UserController.prototype, "getUserByEmail", null);
 __decorate([
     (0, common_1.Patch)(":id"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -124,6 +129,7 @@ __decorate([
 ], UserController.prototype, "updateUser", null);
 __decorate([
     (0, common_1.Delete)(":id"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -131,6 +137,7 @@ __decorate([
 ], UserController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Patch)(":id/password"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -139,6 +146,7 @@ __decorate([
 ], UserController.prototype, "changePassword", null);
 __decorate([
     (0, common_1.Patch)(":id/profile"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

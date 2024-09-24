@@ -9,66 +9,48 @@ export declare class UserController {
     createUser(createUserDto: CreateUserDto): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }>;
     getAllUsers(): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }[]>;
     getUserById(id: string): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }>;
     getUserByEmail(email: string): Promise<{
-        providers: {
-            id: string;
-            userId: string;
-            providerUserId: string | null;
-            providerId: string;
-            createdAt: Date;
-        }[];
-    } & {
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
-    }>;
+        supabaseId: string;
+    } | null>;
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }>;
     deleteUser(id: string): Promise<{
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        emailVerified: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        message: string;
     }>;
     changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<{
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        emailVerified: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        message: string;
     }>;
     updateUserProfile(id: string, updateUserProfileDto: UpdateUserProfileDto): Promise<{
         id: string;

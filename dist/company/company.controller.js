@@ -27,6 +27,8 @@ const company_service_1 = require("./company.service");
 const create_company_dto_1 = require("./create-company.dto");
 const update_company_dto_1 = require("./update-company.dto");
 const invite_user_dto_1 = require("./invite-user.dto");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const common_2 = require("@nestjs/common");
 let CompanyController = class CompanyController {
     constructor(companyService) {
         this.companyService = companyService;
@@ -107,6 +109,7 @@ __decorate([
 ], CompanyController.prototype, "deleteCompany", null);
 exports.CompanyController = CompanyController = __decorate([
     (0, common_1.Controller)("companies"),
+    (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [company_service_1.CompanyService])
 ], CompanyController);
 //# sourceMappingURL=company.controller.js.map

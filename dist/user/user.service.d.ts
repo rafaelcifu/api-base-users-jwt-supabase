@@ -2,72 +2,62 @@ import { PrismaService } from "../prisma/prisma.service";
 import { UpdateUserDto } from "./update-user.dto";
 import { ChangePasswordDto } from "./change-password.dto";
 import { UpdateUserProfileDto } from "./update-user-profile.dto";
+import { User } from "@prisma/client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseService } from "../supabase/supabase.service";
 export declare class UserService {
-    private prisma;
-    constructor(prisma: PrismaService);
-    createUser(email: string, password: string | null, providerId: string, name?: string, phone?: string): Promise<{
+    private prismaService;
+    private supabaseService;
+    private supabaseClient;
+    private supabase;
+    constructor(prismaService: PrismaService, supabaseService: SupabaseService, // Inject SupabaseService
+    supabaseClient: SupabaseClient);
+    createUser(email: string, password: string | null, providerId: string, name?: string, phone?: string, supabaseId?: string): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
+    }>;
+    findOrCreateOAuthUser(email: string, providerId: string): Promise<{
+        id: string;
+        email: string;
+        emailVerified: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        supabaseId: string;
     }>;
     getAllUsers(): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }[]>;
     getUserById(id: string): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }>;
-    findUserByEmail(email: string): Promise<{
-        providers: {
-            id: string;
-            userId: string;
-            providerUserId: string | null;
-            providerId: string;
-            createdAt: Date;
-        }[];
-    } & {
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        emailVerified: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    findUserByEmail(email: string): Promise<User | null>;
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
         id: string;
         email: string;
-        passwordHash: string | null;
         emailVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        supabaseId: string;
     }>;
     deleteUser(id: string): Promise<{
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        emailVerified: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        message: string;
     }>;
     changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<{
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        emailVerified: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        message: string;
     }>;
     updateUserProfile(userId: string, profileData: UpdateUserProfileDto): Promise<{
         id: string;
