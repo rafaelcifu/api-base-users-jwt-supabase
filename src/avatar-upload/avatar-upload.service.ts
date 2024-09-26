@@ -53,6 +53,14 @@ export class UploadService {
       data: { avatarUrl: publicUrl },
     });
 
+    await this.prisma.companyAvatar.create({
+      data: {
+        companyId,
+        fileName,
+        publicUrl,
+      },
+    });
+
     return {
       message: "Avatar uploaded successfully",
       fileName,

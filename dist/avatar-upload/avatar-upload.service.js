@@ -55,6 +55,13 @@ let UploadService = class UploadService {
                 where: { companyId },
                 data: { avatarUrl: publicUrl },
             });
+            yield this.prisma.companyAvatar.create({
+                data: {
+                    companyId,
+                    fileName,
+                    publicUrl,
+                },
+            });
             return {
                 message: "Avatar uploaded successfully",
                 fileName,
