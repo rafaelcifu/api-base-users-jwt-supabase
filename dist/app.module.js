@@ -17,6 +17,9 @@ const user_module_1 = require("./user/user.module");
 const company_module_1 = require("./company/company.module");
 const supabase_module_1 = require("./supabase/supabase.module");
 const auth_module_1 = require("./auth/auth.module");
+const avatar_upload_service_1 = require("./avatar-upload/avatar-upload.service"); // Changed from AvatarUploadService
+const avatar_upload_controller_1 = require("./avatar-upload/avatar-upload.controller"); // Changed from AvatarUploadController
+const avatar_upload_module_1 = require("./avatar-upload/avatar-upload.module"); // Changed from AvatarUploadModule
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -30,9 +33,11 @@ exports.AppModule = AppModule = __decorate([
             user_module_1.UserModule, // User management
             company_module_1.CompanyModule, // Company related logic
             supabase_module_1.SupabaseModule, // Supabase integration
-            auth_module_1.AuthModule, // Authentication logic
+            auth_module_1.AuthModule,
+            avatar_upload_module_1.AvatarModule, // Authentication logic
         ],
-        controllers: [app_controller_1.AppController], // Application controllers
+        controllers: [app_controller_1.AppController, avatar_upload_controller_1.AvatarController],
+        providers: [avatar_upload_service_1.UploadService], // Application controllers
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

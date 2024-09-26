@@ -5,32 +5,32 @@ export declare class AuthProviderController {
     private authProviderService;
     constructor(authProviderService: AuthProviderService);
     createAuthProvider(data: CreateAuthProviderDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
     getAuthProviders(): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
     getAuthProviderById(id: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     } | null>;
     updateAuthProvider(id: string, data: UpdateAuthProviderDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
     deleteAuthProvider(id: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;

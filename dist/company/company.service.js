@@ -17,14 +17,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const common_2 = require("@nestjs/common");
+const mail_1 = __importDefault(require("@sendgrid/mail"));
 let CompanyService = class CompanyService {
     constructor(prisma) {
         this.prisma = prisma;
+        mail_1.default.setApiKey(process.env.SENDGRID_API_KEY);
     }
     createCompany(createCompanyDto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -103,6 +108,8 @@ let CompanyService = class CompanyService {
                         status: "active",
                     },
                 });
+                // Send invitation email to existing user
+                yield this.sendInvitationEmail(user.email, user.name || "User", company.name);
             }
             else {
                 // User does not exist, create entry with email and invited status
@@ -114,9 +121,45 @@ let CompanyService = class CompanyService {
                         status: "invited",
                     },
                 });
+                // Since user does not exist, use default name as 'User'
+                yield this.sendInvitationEmail(email, "User", company.name);
             }
             return { message: `Invitation sent to ${email}` };
         });
+    }
+    sendInvitationEmail(email, name, companyName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Generate a random string for the invitation (optional, for tracking purposes)
+            const inviteIdentifier = this.generateRandomString(12);
+            // Construct the signup URL with necessary parameters
+            const signupUrl = `https://yourapp.com/signup?email=${encodeURIComponent(email)}&companyId=companyId&roleId=roleId&invite=${inviteIdentifier}`;
+            // SendGrid message payload
+            const msg = {
+                to: email,
+                from: "contato@pmakers.com.br", // Your verified sender
+                templateId: "d-6c49163bf9f14426bf9c7101745429f8", // Your SendGrid template ID
+                dynamicTemplateData: {
+                    firstName: name, // User's name
+                    companyName: companyName, // Company name
+                    signupUrl: signupUrl, // Link for signing up
+                },
+            };
+            try {
+                yield mail_1.default.send(msg);
+                console.log(`Invitation email sent successfully to ${email}`);
+            }
+            catch (error) {
+                console.error("Error sending invitation email:", error);
+            }
+        });
+    }
+    generateRandomString(length) {
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
     }
     getAllCompanies() {
         return __awaiter(this, void 0, void 0, function* () {

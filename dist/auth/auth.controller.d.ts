@@ -5,9 +5,11 @@ export declare class AuthController {
     signUp(body: {
         email: string;
         password: string;
+        name: string;
     }): Promise<{
         message: string;
         user: {
+            name: string | null;
             id: string;
             email: string;
             emailVerified: boolean;

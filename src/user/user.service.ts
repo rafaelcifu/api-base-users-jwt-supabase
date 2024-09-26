@@ -49,8 +49,9 @@ export class UserService {
     const newUser = await this.prismaService.user.create({
       data: {
         email,
+        name: name || "User", // Save the name directly in the User table with a fallback to 'User'
         supabaseId: supabaseId as string, // Use the passed supabaseId
-        profile: name || phone ? { create: { name, phone } } : undefined,
+        profile: phone ? { create: { phone } } : undefined, // Only create profile if phone is provided
       },
     });
 
@@ -131,18 +132,9 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
 
-    // Ensure user.supabaseId is not null before passing it
-    if (user.supabaseId) {
-      const { error } = await this.supabase.auth.admin.deleteUser(
-        user.supabaseId
-      );
-      if (error) {
-        throw new BadRequestException(`Supabase error: ${error.message}`);
-      }
-    }
-
     // Delete the user in your local database
     await this.prismaService.user.delete({ where: { id } });
+    console.log(`User with ID ${id} deleted from local database`);
 
     return { message: "User deleted successfully" };
   }

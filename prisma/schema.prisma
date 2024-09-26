@@ -11,6 +11,7 @@ datasource db {
 model User {
   id            String         @id @default(uuid())
   email         String         @unique
+  name          String?
   emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -24,12 +25,21 @@ model UserProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String?
   phone     String?
   bio       String?
   avatarUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  type      String // e.g., 'error', 'info', 'warning'
+  service   String // e.g., 'SendGrid', 'UserService'
+  message   String // Description of the log or error
+  metadata  Json? // Optional field to store any additional data
+  email     String? // Optional field to store associated user email
+  createdAt DateTime @default(now())
 }
 
 model AuthProvider {
@@ -57,14 +67,15 @@ model Role {
 }
 
 model Company {
-  id        String          @id @default(uuid())
-  name      String
-  website   String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  profile   CompanyProfile? // One-to-one relationship with CompanyProfile
-  users     CompanyUser[] // Relationship to connect companies to users
-  projects  Project[] // One-to-many relationship with projects
+  id           String          @id @default(uuid())
+  name         String
+  website      String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  profile      CompanyProfile? // One-to-one relationship with CompanyProfile
+  users        CompanyUser[] // Relationship to connect companies to users
+  projects     Project[] // One-to-many relationship with projects
+  avatarImages CompanyAvatar[] // One-to-many relationship with avatars
 }
 
 model CompanyProfile {
@@ -80,6 +91,18 @@ model CompanyProfile {
   bio              String? // Company description
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model CompanyAvatar {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fileName  String
+  publicUrl String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model CompanyUser {

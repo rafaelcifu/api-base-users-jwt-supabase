@@ -50,8 +50,9 @@ let UserService = class UserService {
             const newUser = yield this.prismaService.user.create({
                 data: {
                     email,
+                    name: name || "User", // Save the name directly in the User table with a fallback to 'User'
                     supabaseId: supabaseId, // Use the passed supabaseId
-                    profile: name || phone ? { create: { name, phone } } : undefined,
+                    profile: phone ? { create: { phone } } : undefined, // Only create profile if phone is provided
                 },
             });
             // Link the user to the provider in your own database
@@ -133,15 +134,9 @@ let UserService = class UserService {
             if (!user) {
                 throw new common_1.NotFoundException("User not found");
             }
-            // Ensure user.supabaseId is not null before passing it
-            if (user.supabaseId) {
-                const { error } = yield this.supabase.auth.admin.deleteUser(user.supabaseId);
-                if (error) {
-                    throw new common_1.BadRequestException(`Supabase error: ${error.message}`);
-                }
-            }
             // Delete the user in your local database
             yield this.prismaService.user.delete({ where: { id } });
+            console.log(`User with ID ${id} deleted from local database`);
             return { message: "User deleted successfully" };
         });
     }

@@ -13,12 +13,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("signup")
-  async signUp(@Body() body: { email: string; password: string }) {
-    const { email, password } = body;
+  async signUp(
+    @Body() body: { email: string; password: string; name: string }
+  ) {
+    const { email, password, name } = body;
     if (!email || !password) {
       throw new BadRequestException("Email and password are required");
     }
-    return this.authService.signUp(email, password);
+
+    console.log("Name received in controller:", name); // Log the name value to confirm
+
+    // Call the authService.signUp method with the correct parameters
+    return this.authService.signUp(email, password, name); // Ensure 'name' is passed correctly
   }
 
   @Post("signin")

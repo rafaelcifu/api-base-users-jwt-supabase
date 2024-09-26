@@ -13,6 +13,7 @@ export declare class UserService {
     constructor(prismaService: PrismaService, supabaseService: SupabaseService, // Inject SupabaseService
     supabaseClient: SupabaseClient);
     createUser(email: string, password: string | null, providerId: string, name?: string, phone?: string, supabaseId?: string): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -21,6 +22,7 @@ export declare class UserService {
         supabaseId: string;
     }>;
     findOrCreateOAuthUser(email: string, providerId: string): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -29,6 +31,7 @@ export declare class UserService {
         supabaseId: string;
     }>;
     getAllUsers(): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -37,6 +40,7 @@ export declare class UserService {
         supabaseId: string;
     }[]>;
     getUserById(id: string): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -46,6 +50,7 @@ export declare class UserService {
     }>;
     findUserByEmail(email: string): Promise<User | null>;
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -61,12 +66,11 @@ export declare class UserService {
     }>;
     updateUserProfile(userId: string, profileData: UpdateUserProfileDto): Promise<{
         id: string;
-        userId: string;
-        name: string | null;
         phone: string | null;
         bio: string | null;
         avatarUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
 }

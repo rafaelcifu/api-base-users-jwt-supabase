@@ -4,9 +4,13 @@ import { CreateCompanyDto } from "./create-company.dto";
 import { UpdateCompanyDto } from "./update-company.dto";
 import { InviteUserDto } from "./invite-user.dto";
 import { BadRequestException } from "@nestjs/common";
+import sgMail from "@sendgrid/mail";
+
 @Injectable()
 export class CompanyService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+  }
 
   async createCompany(createCompanyDto: CreateCompanyDto) {
     const {
@@ -104,6 +108,13 @@ export class CompanyService {
           status: "active",
         },
       });
+
+      // Send invitation email to existing user
+      await this.sendInvitationEmail(
+        user.email,
+        user.name || "User",
+        company.name
+      );
     } else {
       // User does not exist, create entry with email and invited status
       await this.prisma.companyUser.create({
@@ -114,9 +125,57 @@ export class CompanyService {
           status: "invited",
         },
       });
+
+      // Since user does not exist, use default name as 'User'
+      await this.sendInvitationEmail(email, "User", company.name);
     }
 
     return { message: `Invitation sent to ${email}` };
+  }
+
+  private async sendInvitationEmail(
+    email: string,
+    name: string,
+    companyName: string
+  ) {
+    // Generate a random string for the invitation (optional, for tracking purposes)
+    const inviteIdentifier = this.generateRandomString(12);
+
+    // Construct the signup URL with necessary parameters
+    const signupUrl = `https://yourapp.com/signup?email=${encodeURIComponent(
+      email
+    )}&companyId=companyId&roleId=roleId&invite=${inviteIdentifier}`;
+
+    // SendGrid message payload
+    const msg = {
+      to: email,
+      from: "contato@pmakers.com.br", // Your verified sender
+      templateId: "d-6c49163bf9f14426bf9c7101745429f8", // Your SendGrid template ID
+      dynamicTemplateData: {
+        firstName: name, // User's name
+        companyName: companyName, // Company name
+        signupUrl: signupUrl, // Link for signing up
+      },
+    };
+
+    try {
+      await sgMail.send(msg);
+      console.log(`Invitation email sent successfully to ${email}`);
+    } catch (error) {
+      console.error("Error sending invitation email:", error);
+    }
+  }
+
+  private generateRandomString(length: number): string {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return result;
   }
 
   async getAllCompanies() {

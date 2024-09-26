@@ -6,11 +6,11 @@ export declare class CompanyController {
     private companyService;
     constructor(companyService: CompanyService);
     createCompany(createCompanyDto: CreateCompanyDto): Promise<{
-        id: string;
         name: string;
-        website: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        website: string | null;
     }>;
     inviteUserToCompany(inviteUserDto: InviteUserDto): Promise<{
         message: string;
@@ -18,57 +18,57 @@ export declare class CompanyController {
     getAllCompanies(): Promise<({
         profile: {
             id: string;
+            bio: string | null;
+            avatarUrl: string | null;
             companyId: string;
+            createdAt: Date;
+            updatedAt: Date;
             cnpj: string | null;
             primaryColor: string | null;
             secondaryColor: string | null;
-            avatarUrl: string | null;
             address: string | null;
             socialMediaLinks: import("@prisma/client/runtime/library").JsonValue | null;
-            bio: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         } | null;
     } & {
-        id: string;
         name: string;
-        website: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        website: string | null;
     })[]>;
     getCompanyById(id: string): Promise<{
         profile: {
             id: string;
+            bio: string | null;
+            avatarUrl: string | null;
             companyId: string;
+            createdAt: Date;
+            updatedAt: Date;
             cnpj: string | null;
             primaryColor: string | null;
             secondaryColor: string | null;
-            avatarUrl: string | null;
             address: string | null;
             socialMediaLinks: import("@prisma/client/runtime/library").JsonValue | null;
-            bio: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         } | null;
     } & {
-        id: string;
         name: string;
-        website: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        website: string | null;
     }>;
     updateCompany(id: string, updateCompanyDto: UpdateCompanyDto): Promise<{
-        id: string;
         name: string;
-        website: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        website: string | null;
     }>;
     deleteCompany(id: string): Promise<{
-        id: string;
         name: string;
-        website: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        website: string | null;
     }>;
 }

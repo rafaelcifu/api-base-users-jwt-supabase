@@ -7,6 +7,7 @@ export declare class UserController {
     private userService;
     constructor(userService: UserService);
     createUser(createUserDto: CreateUserDto): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -15,6 +16,7 @@ export declare class UserController {
         supabaseId: string;
     }>;
     getAllUsers(): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -23,6 +25,7 @@ export declare class UserController {
         supabaseId: string;
     }[]>;
     getUserById(id: string): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -31,6 +34,7 @@ export declare class UserController {
         supabaseId: string;
     }>;
     getUserByEmail(email: string): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -39,6 +43,7 @@ export declare class UserController {
         supabaseId: string;
     } | null>;
     updateUser(id: string, updateUserDto: UpdateUserDto): Promise<{
+        name: string | null;
         id: string;
         email: string;
         emailVerified: boolean;
@@ -54,12 +59,11 @@ export declare class UserController {
     }>;
     updateUserProfile(id: string, updateUserProfileDto: UpdateUserProfileDto): Promise<{
         id: string;
-        userId: string;
-        name: string | null;
         phone: string | null;
         bio: string | null;
         avatarUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
 }

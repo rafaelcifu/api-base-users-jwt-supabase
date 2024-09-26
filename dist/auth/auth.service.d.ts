@@ -3,15 +3,12 @@ import { PrismaService } from "../prisma/prisma.service";
 export declare class AuthService {
     private userService;
     private prisma;
-    private emailRequestCount;
-    private readonly EMAIL_LIMIT;
-    private readonly TIME_FRAME;
-    private lastRequestTime;
     private supabase;
     constructor(userService: UserService, prisma: PrismaService);
-    signUp(email: string, password: string): Promise<{
+    signUp(email: string, password: string, name: string): Promise<{
         message: string;
         user: {
+            name: string | null;
             id: string;
             email: string;
             emailVerified: boolean;
@@ -20,6 +17,9 @@ export declare class AuthService {
             supabaseId: string;
         };
     }>;
+    private createUserProvider;
+    private updateCompanyUserStatus;
+    private sendWelcomeEmail;
     signIn(email: string, password: string): Promise<{
         user: import("@supabase/supabase-js").AuthUser;
         session: import("@supabase/supabase-js").AuthSession;

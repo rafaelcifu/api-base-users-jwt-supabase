@@ -30,11 +30,13 @@ let AuthController = class AuthController {
     }
     signUp(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { email, password } = body;
+            const { email, password, name } = body;
             if (!email || !password) {
                 throw new common_1.BadRequestException("Email and password are required");
             }
-            return this.authService.signUp(email, password);
+            console.log("Name received in controller:", name); // Log the name value to confirm
+            // Call the authService.signUp method with the correct parameters
+            return this.authService.signUp(email, password, name); // Ensure 'name' is passed correctly
         });
     }
     signIn(body) {
